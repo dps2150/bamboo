@@ -3,15 +3,18 @@ import copy
 import sys
 
 
+
 # BAMBOO DATA FRAME
 
 class DataFrame():
     def __init__(self, data):
         if isinstance(data, pd.DataFrame):
-            self.data = data.to_dict('list')  # {col:data[col] for col in data.columns}
+            #self.data = data.to_dict('list') :: slower 
+            self.data = {col:data[col].tolist() for col in data.columns}
             self.len = len(data)
         elif isinstance(data, dict):
-            self.data = copy.deepcopy(data)
+            #self.data = copy.copy(data) :: muchj slower 
+            self.data = {key: list(value) for key,value in data.items()}
             self.len = len(data[next(iter(data.keys()))])
 
     def __getitem__(self, value):
@@ -70,6 +73,10 @@ class DataFrame():
     @property
     def unique(self):
         return set(self.data)
+    
+    @property
+    def shape(self):
+        return self.len, len(self.data.keys())
 
     def to_pd(self):
         return pd.DataFrame(self.data)
