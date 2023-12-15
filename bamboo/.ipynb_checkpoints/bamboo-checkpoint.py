@@ -77,6 +77,10 @@ class DataFrame():
     @property
     def shape(self):
         return self.len, len(self.data.keys())
+    
+    @property
+    def size(self):
+        return self.len * len(self.data.keys())
 
     def to_pd(self):
         return pd.DataFrame(self.data)
@@ -112,3 +116,22 @@ class LOC:
             self.a[col][index] = value
 
     # TODO :: add in slice set and multi
+    
+def concat(data_list, axis=0, ignore_index=True):
+    df1, df2 = data_list
+    df1_columns = set(df1.columns)
+    df2_columns = set(df2.columns)
+    for col in df1_columns.intersection(df2_columns):
+        df1[col].extend(df2[col])
+        
+    for col in df1_columns.difference(df2_columns):
+        df1[col].extend([None] * len(df2))
+        
+    for col in df2_columns.difference(df1_columns):
+        df1[col] = None
+        df1[col].extend(df2[col])
+        
+    return df1
+            
+    
+        
